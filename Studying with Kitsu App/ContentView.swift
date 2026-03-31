@@ -1,32 +1,30 @@
 import SwiftUI
 
 struct ContentView: View {
-    var body: some View {
-        // Apresenta o fluxo 9 → 10. A transição para a Unidade 10
-        // ocorre 3 segundos após a detecção da mão e exibição do sorvete.
-        LocalUnitFlowContainer()
-    }
-}
-
-private struct LocalUnitFlowContainer: View {
     @State private var showUnit10 = false
-    @State private var hasScheduledTransition = false
 
     var body: some View {
         Group {
             if showUnit10 {
-                Unit10View()
+                Unit10NarrativeView(viewModel: Unit10NarrativeViewModel())
             } else {
-                Unit9View(viewModel: Unit9ViewModel(userName: "Kid"))
-                    .onReceive(NotificationCenter.default.publisher(for: .handDetected)) { _ in
-                        guard !hasScheduledTransition else { return }
-                        hasScheduledTransition = true
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0) {
-                            showUnit10 = true
-                        }
-                    }
+                // Placeholder para a Unit 9 (evita dependências fora de escopo)
+                Unit9TransitionPlaceholder()
             }
         }
+        .onAppear {
+            // Transição direta para a Unit 10 na próxima volta do runloop
+            DispatchQueue.main.async {
+                showUnit10 = true
+            }
+        }
+    }
+}
+
+private struct Unit9TransitionPlaceholder: View {
+    var body: some View {
+        // Tela temporária/preta para representar a Unit 9 antes da transição
+        Color.black.ignoresSafeArea()
     }
 }
 
@@ -35,4 +33,3 @@ private struct LocalUnitFlowContainer: View {
         .previewDevice(PreviewDevice(rawValue: "iPad Pro (11-inch) (4th generation)"))
         .previewLayout(.fixed(width: 834, height: 1194))
 }
-

@@ -1,4 +1,5 @@
 import SwiftUI
+import Combine
 
 public struct NarrativeView: View {
     @ObservedObject private var viewModel: NarrativeViewModel

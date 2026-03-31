@@ -20,7 +20,7 @@ struct StartView: View {
             VStack {
                 Spacer()
 
-                Text("Tap Start to 'start to enjoy this playground.")
+                Text("Tap Start to 'start' to enjoy.")
                     .foregroundStyle(.white.opacity(0.4))
                     .padding(.bottom, 8)
 
