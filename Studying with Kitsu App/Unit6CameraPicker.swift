@@ -11,13 +11,14 @@ public struct Unit6CameraPicker: UIViewControllerRepresentable {
 
     public func makeUIViewController(context: Context) -> UIImagePickerController {
         let picker = UIImagePickerController()
-        if UIImagePickerController.isSourceTypeAvailable(.camera) {
-            picker.sourceType = .camera
-            if UIImagePickerController.isCameraDeviceAvailable(.front) {
-                picker.cameraDevice = .front
-            }
-        } else {
-            picker.sourceType = .photoLibrary
+        guard UIImagePickerController.isSourceTypeAvailable(.camera) else {
+            picker.delegate = context.coordinator
+            return picker
+        }
+
+        picker.sourceType = .camera
+        if UIImagePickerController.isCameraDeviceAvailable(.front) {
+            picker.cameraDevice = .front
         }
         picker.allowsEditing = false
         picker.delegate = context.coordinator
