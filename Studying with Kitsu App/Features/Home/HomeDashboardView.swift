@@ -27,6 +27,14 @@ struct HomeDashboardView: View {
                         }
 
                         featureCard(
+                            title: "Journey logbook",
+                            subtitle: "Open the family's story and milestone journal",
+                            accent: AppTheme.skyDark
+                        ) {
+                            appStore.goToJourneyLogbook()
+                        }
+
+                        featureCard(
                             title: "Rewards",
                             subtitle: "Trade coins for playful family rewards",
                             accent: AppTheme.sunflower
@@ -42,6 +50,14 @@ struct HomeDashboardView: View {
                             accent: AppTheme.lime
                         ) {
                             appStore.goToDailyTasks()
+                        }
+
+                        featureCard(
+                            title: "Journey logbook",
+                            subtitle: "Open the family's story and milestone journal",
+                            accent: AppTheme.skyDark
+                        ) {
+                            appStore.goToJourneyLogbook()
                         }
 
                         featureCard(
@@ -171,6 +187,7 @@ struct HomeDashboardView: View {
                     appStore.goToChildPicker()
                 }
             }
+            .font(.headline.weight(.bold))
             .buttonStyle(.borderedProminent)
             .tint(AppTheme.skyDark)
 

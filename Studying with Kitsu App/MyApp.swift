@@ -9,6 +9,7 @@ struct MyApp: App {
     @StateObject private var childStore: ChildProfileStore
     @StateObject private var routineStore: RoutineStore
     @StateObject private var rewardStore: RewardStore
+    @StateObject private var journeyLogbookStore: JourneyLogbookStore
     @StateObject private var parentSecurityStore = ParentSecurityStore()
 
     private let customFontFileNames = [
@@ -23,6 +24,7 @@ struct MyApp: App {
         _childStore = StateObject(wrappedValue: ChildProfileStore(familyStore: familyStore))
         _routineStore = StateObject(wrappedValue: RoutineStore(familyStore: familyStore))
         _rewardStore = StateObject(wrappedValue: RewardStore(familyStore: familyStore))
+        _journeyLogbookStore = StateObject(wrappedValue: JourneyLogbookStore(familyStore: familyStore))
         FontLoader.loadCustomFonts(customFontFileNames)
     }
 
@@ -34,6 +36,7 @@ struct MyApp: App {
                 childStore: childStore,
                 routineStore: routineStore,
                 rewardStore: rewardStore,
+                journeyLogbookStore: journeyLogbookStore,
                 parentSecurityStore: parentSecurityStore
             )
         }

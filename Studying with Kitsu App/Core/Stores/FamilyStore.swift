@@ -85,6 +85,7 @@ final class FamilyStore: ObservableObject {
         LocalPersistence.removeValue(forKey: LocalPersistenceKey.studyRoutine(childID))
         LocalPersistence.removeValue(forKey: LocalPersistenceKey.rewardItems(childID))
         LocalPersistence.removeValue(forKey: LocalPersistenceKey.appProgress(childID))
+        LocalPersistence.removeValue(forKey: LocalPersistenceKey.journeyLogbook(childID))
 
         if activeChildID == childID {
             activeChildID = children.first?.id

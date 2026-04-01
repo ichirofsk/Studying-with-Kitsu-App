@@ -175,6 +175,7 @@ struct ChildPickerView: View {
                 parentSecurityStore.clearVerification()
                 appStore.goToHome()
             }
+            .font(.headline.weight(.bold))
             .buttonStyle(.borderedProminent)
             .tint(AppTheme.limeDark)
         }

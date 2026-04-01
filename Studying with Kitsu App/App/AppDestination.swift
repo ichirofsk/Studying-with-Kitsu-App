@@ -8,6 +8,7 @@ enum AppDestination: String, Hashable, Codable {
     case routineSetup
     case home
     case dailyTasks
+    case journeyLogbook
     case rewards
     case progress
 }

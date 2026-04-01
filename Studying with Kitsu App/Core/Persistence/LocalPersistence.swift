@@ -19,6 +19,10 @@ enum LocalPersistenceKey {
     static func appProgress(_ childID: UUID) -> String {
         "kitsu.child.\(childID.uuidString).progress"
     }
+
+    static func journeyLogbook(_ childID: UUID) -> String {
+        "kitsu.child.\(childID.uuidString).journeyLogbook"
+    }
 }
 
 enum LocalPersistence {

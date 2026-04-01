@@ -204,11 +204,13 @@ struct DailyTasksHubView: View {
                     Button("Add task") {
                         prepareEditor(for: .create)
                     }
+                    .font(.headline.weight(.bold))
                     .buttonStyle(.bordered)
 
                     Button("Dashboard") {
                         appStore.goToHome()
                     }
+                    .font(.headline.weight(.bold))
                     .buttonStyle(.borderedProminent)
                     .tint(AppTheme.skyDark)
                 }
@@ -217,11 +219,13 @@ struct DailyTasksHubView: View {
                     Button("Add task") {
                         prepareEditor(for: .create)
                     }
+                    .font(.headline.weight(.bold))
                     .buttonStyle(.bordered)
 
                     Button("Dashboard") {
                         appStore.goToHome()
                     }
+                    .font(.headline.weight(.bold))
                     .buttonStyle(.borderedProminent)
                     .tint(AppTheme.skyDark)
                 }
@@ -290,9 +294,12 @@ struct DailyTasksHubView: View {
                 tagLabel(title: "Default", color: AppTheme.skyDark)
             } else {
                 HStack(spacing: 8) {
-                    Button("Edit") {
+                    Button {
                         prepareEditor(for: .edit(task))
+                    } label: {
+                        Image(systemName: "pencil")
                     }
+                    .font(.headline.weight(.bold))
                     .buttonStyle(.bordered)
 
                     Button {
@@ -309,10 +316,25 @@ struct DailyTasksHubView: View {
                 }
             }
 
-            Button(isCompleted(task) ? "Done" : "Mark done") {
+            Button {
                 appStore.completeTask(task)
                 if completedCount == routineStore.routine.tasks.count {
                     appStore.markDailyRoutineCompleted()
+                }
+            } label: {
+                if isCompleted(task) {
+                    VStack(spacing: 4) {
+                        Text("Done")
+                            .font(.headline.weight(.bold))
+                            .foregroundStyle(.black)
+                        TimelineView(.periodic(from: .now, by: 1)) { context in
+                            Text(countdownText(until: nextTaskResetDate(from: context.date), now: context.date))
+                                .font(.caption.weight(.bold))
+                                .foregroundStyle(AppTheme.skyDark)
+                        }
+                    }
+                } else {
+                    Text("Mark done")
                 }
             }
             .buttonStyle(.borderedProminent)
@@ -412,13 +434,15 @@ struct DailyTasksHubView: View {
             VStack(alignment: .leading, spacing: 18) {
                 Text(mode == .create ? "Create a task" : "Edit task")
                     .font(.title2.weight(.heavy))
-                    .foregroundStyle(.black)
+                    .foregroundStyle(AppTheme.skyDark)
 
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Task name")
                         .font(.headline)
-                        .foregroundStyle(.black)
+                        .foregroundStyle(AppTheme.skyDark)
                     TextField("Enter the task title", text: $editorTitle)
+                        .foregroundStyle(.black)
+                        .tint(.black)
                         .padding(14)
                         .background(AppTheme.cloud)
                         .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
@@ -431,9 +455,11 @@ struct DailyTasksHubView: View {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Reward coins")
                         .font(.headline)
-                        .foregroundStyle(.black)
+                        .foregroundStyle(AppTheme.skyDark)
                     TextField("7", text: $editorCoins)
                         .keyboardType(.numberPad)
+                        .foregroundStyle(.black)
+                        .tint(.black)
                         .padding(14)
                         .background(AppTheme.cloud)
                         .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
@@ -453,17 +479,23 @@ struct DailyTasksHubView: View {
             }
             .padding(24)
             .background(AppTheme.cream.ignoresSafeArea())
-            .navigationTitle(mode == .create ? "New task" : "Edit task")
+            .navigationTitle("")
             .navigationBarTitleDisplayMode(.inline)
             .toolbarBackground(AppTheme.cream, for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
             .toolbarColorScheme(.light, for: .navigationBar)
             .toolbar {
+                ToolbarItem(placement: .principal) {
+                    Text(mode == .create ? "New task" : "Edit task")
+                        .font(.headline.weight(.bold))
+                        .foregroundStyle(AppTheme.skyDark)
+                }
                 ToolbarItem(placement: .topBarLeading) {
                     Button("Cancel") {
                         parentSecurityStore.clearVerification()
                         editorMode = nil
                     }
+                    .font(.headline.weight(.bold))
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Save") {
@@ -479,6 +511,7 @@ struct DailyTasksHubView: View {
                         parentSecurityStore.clearVerification()
                         editorMode = nil
                     }
+                    .font(.headline.weight(.bold))
                 }
             }
         }
@@ -497,5 +530,18 @@ private extension DailyTasksHubView {
 
     var horizontalPadding: CGFloat {
         isCompactLayout ? 16 : 24
+    }
+
+    func nextTaskResetDate(from date: Date = Date(), calendar: Calendar = .current) -> Date {
+        let startOfToday = calendar.startOfDay(for: date)
+        return calendar.date(byAdding: .day, value: 1, to: startOfToday) ?? date
+    }
+
+    func countdownText(until resetDate: Date, now: Date) -> String {
+        let remaining = max(0, Int(resetDate.timeIntervalSince(now)))
+        let hours = remaining / 3600
+        let minutes = (remaining % 3600) / 60
+        let seconds = remaining % 60
+        return String(format: "%02d:%02d:%02d", hours, minutes, seconds)
     }
 }

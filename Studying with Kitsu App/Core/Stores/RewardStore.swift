@@ -19,10 +19,10 @@ final class RewardStore: ObservableObject {
         self.rewards = familyStore.activeChildID.flatMap {
             LocalPersistence.load([RewardItem].self, forKey: LocalPersistenceKey.rewardItems($0))
         } ?? [
-            RewardItem(title: "Choose dessert", cost: 24),
-            RewardItem(title: "Family movie night", cost: 89),
-            RewardItem(title: "Special weekend outing", cost: 201),
-            RewardItem(title: "Family surprise", cost: 311)
+            RewardItem(title: "Choose dessert", cost: 24, symbolName: "star.fill"),
+            RewardItem(title: "Family movie night", cost: 89, symbolName: "popcorn.fill"),
+            RewardItem(title: "Special weekend outing", cost: 201, symbolName: "figure.play"),
+            RewardItem(title: "Family surprise", cost: 311, symbolName: "gift.fill")
         ]
 
         familyStore.$activeChildID
@@ -65,9 +65,9 @@ final class RewardStore: ObservableObject {
     }
 
     private static let defaultRewards: [RewardItem] = [
-        RewardItem(title: "Choose dessert", cost: 24),
-        RewardItem(title: "Family movie night", cost: 89),
-        RewardItem(title: "Special weekend outing", cost: 201),
-        RewardItem(title: "Family surprise", cost: 311)
+        RewardItem(title: "Choose dessert", cost: 24, symbolName: "star.fill"),
+        RewardItem(title: "Family movie night", cost: 89, symbolName: "popcorn.fill"),
+        RewardItem(title: "Special weekend outing", cost: 201, symbolName: "figure.play"),
+        RewardItem(title: "Family surprise", cost: 311, symbolName: "gift.fill")
     ]
 }
