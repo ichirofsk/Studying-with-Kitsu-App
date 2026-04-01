@@ -249,7 +249,7 @@ public struct Unit7View: View {
                 Text("This is where the caregiver tracks the day's milestones. Imagine that \(viewModel.user.name) went to school, did homework, and had a study moment. Check the tasks to record the routine progress.")
                     .font(.title3.weight(.medium))
                     .multilineTextAlignment(.center)
-                    .foregroundColor(.black)
+                    .foregroundColor(AppTheme.ink)
                 
                 if viewModel.showTapToCloseHint || dialogHintDelayPassed {
                     Text("Tap anywhere to close")
@@ -287,7 +287,7 @@ public struct Unit7View: View {
                 Text("Great job! You earned 24 coins today. They help turn consistency into rewards, so it is worth coming back every day to log the routine.")
                     .font(.title3.weight(.medium))
                     .multilineTextAlignment(.center)
-                    .foregroundColor(.black)
+                    .foregroundColor(AppTheme.ink)
                 
                 if viewModel.showTapToCloseHint || dialogHintDelayPassed {
                     Text("Tap anywhere to close")
@@ -322,7 +322,7 @@ public struct Unit7View: View {
         Text("+3 consistency bonus!")
             .font(.title2.weight(.bold))
             .padding()
-            .background(RoundedRectangle(cornerRadius: 12).fill(Color.green.opacity(0.85)))
+            .background(RoundedRectangle(cornerRadius: 12).fill(AppTheme.limeDark.opacity(0.9)))
             .foregroundColor(.white)
             .shadow(radius: 6)
             .transition(.opacity)

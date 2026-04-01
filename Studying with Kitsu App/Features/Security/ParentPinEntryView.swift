@@ -27,6 +27,8 @@ struct ParentPinEntryView: View {
                     TextField("Enter 4 digits", text: $pin)
                         .keyboardType(.numberPad)
                         .textContentType(.oneTimeCode)
+                        .foregroundStyle(AppTheme.ink)
+                        .tint(AppTheme.ink)
                         .padding(14)
                         .background(AppTheme.cloud)
                         .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))

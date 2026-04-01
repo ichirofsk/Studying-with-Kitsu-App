@@ -50,7 +50,7 @@ public struct NarrativeView: View {
                     Button(action: onFollowKitsu) {
                         Text("Follow Kitsu")
                             .font(.custom("PressStart2P-Regular", size: 20))
-                            .foregroundColor(.black)
+                            .foregroundColor(AppTheme.ink)
                             .padding(.vertical, 10)
                             .padding(.horizontal, 16)
                             .background(Color.white)
@@ -77,7 +77,7 @@ public struct NarrativeView: View {
                     Text(viewModel.pages[viewModel.currentIndex].text)
                         .font(.custom("PressStart2P-Regular", size: 30))
                         .shadow(color: Color.black.opacity(0.25), radius: 1, x: 0, y: 1)
-                        .foregroundColor(.black)
+                        .foregroundColor(AppTheme.ink)
                         .multilineTextAlignment(.leading)
                         .padding(16)
                         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)

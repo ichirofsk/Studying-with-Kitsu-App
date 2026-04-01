@@ -22,16 +22,18 @@ struct ProgressSummaryView: View {
                     VStack(alignment: .leading, spacing: 12) {
                         Text("Current streak")
                             .font(.headline)
-                            .foregroundStyle(AppTheme.skyDark)
+                            .foregroundStyle(AppTheme.ink)
                         Text("\(appStore.currentStreak) day(s)")
                             .font(.system(size: 42, weight: .heavy, design: .rounded))
                             .foregroundStyle(AppTheme.ink)
                         Text("Tasks completed today: \(appStore.completedTaskIDs.count)")
                             .font(.headline)
+                            .foregroundStyle(AppTheme.ink)
                         Text("Available coins: \(appStore.earnedCoins)")
                             .font(.headline)
+                            .foregroundStyle(AppTheme.ink)
                         Text("This screen will receive the visual history and routine indicators as we continue migrating the old task logic.")
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(AppTheme.ink.opacity(0.72))
                     }
                 }
 

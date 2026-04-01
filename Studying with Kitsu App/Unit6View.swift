@@ -54,10 +54,12 @@ public struct Unit6View: View {
             VStack(alignment: .leading, spacing: 12) {
                 Text("Kid name:")
                     .font(.headline)
-                    .foregroundColor(.black)
+                    .foregroundColor(AppTheme.ink)
                 TextField("Enter name", text: $viewModel.nameInput)
                     .textInputAutocapitalization(.words)
                     .disableAutocorrection(true)
+                    .foregroundStyle(AppTheme.ink)
+                    .tint(AppTheme.ink)
                     .padding(10)
                     .background(Color.gray.opacity(0.15))
                     .cornerRadius(8)
@@ -82,10 +84,10 @@ public struct Unit6View: View {
             VStack(alignment: .leading, spacing: 12) {
                 Text("Kid name:")
                     .font(.headline)
-                    .foregroundColor(.black)
+                    .foregroundColor(AppTheme.ink)
                 Text(viewModel.nameInput)
                     .font(.title3)
-                    .foregroundColor(.black)
+                    .foregroundColor(AppTheme.ink)
 
                 HStack {
                     Button("Rewrite") {
@@ -106,7 +108,7 @@ public struct Unit6View: View {
             VStack(alignment: .center, spacing: 12) {
                 Text("Kid photo")
                     .font(.headline)
-                    .foregroundColor(.black)
+                    .foregroundColor(AppTheme.ink)
 
                 Button("Open camera") {
                     if isCameraAvailable {
@@ -251,4 +253,3 @@ private struct Unit6PreviewContainer<Content: View>: View {
         Unit6View(viewModel: containerVM)
     }
 }
-

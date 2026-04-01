@@ -38,6 +38,9 @@ struct DailyTasksHubView: View {
             .padding(horizontalPadding)
             .frame(maxWidth: .infinity)
         }
+        .onAppear {
+            appStore.refreshDailyTaskStateIfNeeded()
+        }
         .sheet(
             isPresented: Binding(
                 get: { editorMode != nil },
@@ -409,11 +412,12 @@ struct DailyTasksHubView: View {
             VStack(alignment: .leading, spacing: 18) {
                 Text(mode == .create ? "Create a task" : "Edit task")
                     .font(.title2.weight(.heavy))
-                    .foregroundStyle(AppTheme.ink)
+                    .foregroundStyle(.black)
 
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Task name")
                         .font(.headline)
+                        .foregroundStyle(.black)
                     TextField("Enter the task title", text: $editorTitle)
                         .padding(14)
                         .background(AppTheme.cloud)
@@ -427,6 +431,7 @@ struct DailyTasksHubView: View {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Reward coins")
                         .font(.headline)
+                        .foregroundStyle(.black)
                     TextField("7", text: $editorCoins)
                         .keyboardType(.numberPad)
                         .padding(14)
@@ -450,6 +455,9 @@ struct DailyTasksHubView: View {
             .background(AppTheme.cream.ignoresSafeArea())
             .navigationTitle(mode == .create ? "New task" : "Edit task")
             .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackground(AppTheme.cream, for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
+            .toolbarColorScheme(.light, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button("Cancel") {

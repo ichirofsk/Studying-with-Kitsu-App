@@ -63,6 +63,8 @@ struct ParentPinSetupView: View {
             TextField("0000", text: text)
                 .keyboardType(.numberPad)
                 .textContentType(.oneTimeCode)
+                .foregroundStyle(AppTheme.ink)
+                .tint(AppTheme.ink)
                 .padding(14)
                 .background(AppTheme.cloud)
                 .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))

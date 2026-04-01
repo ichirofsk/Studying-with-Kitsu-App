@@ -133,8 +133,17 @@ struct RewardsHubView: View {
                             }
                             .buttonStyle(.bordered)
 
-                            Button(appStore.canRedeem(reward) ? "Redeem" : "Need more coins") {
+                            Button {
                                 appStore.redeem(reward)
+                            } label: {
+                                Text(appStore.canRedeem(reward) ? "Redeem" : "Need more coins")
+                                    .foregroundColor(appStore.canRedeem(reward) ? .primary : .white)
+                                    .shadow(
+                                        color: appStore.canRedeem(reward) ? .clear : Color.black.opacity(0.35),
+                                        radius: 1,
+                                        x: 0,
+                                        y: 1
+                                    )
                             }
                             .buttonStyle(.borderedProminent)
                             .tint(appStore.canRedeem(reward) ? AppTheme.limeDark : Color.gray)

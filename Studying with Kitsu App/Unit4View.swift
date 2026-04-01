@@ -28,7 +28,7 @@ public struct Unit4View: View {
                         Text(viewModel.currentDialog.text)
                             .font(.custom("PressStart2P-Regular", size: 30))
                             .shadow(color: Color.black.opacity(0.25), radius: 1, x: 0, y: 1)
-                            .foregroundColor(.black)
+                            .foregroundColor(AppTheme.ink)
                             .multilineTextAlignment(.leading)
                             .padding(16)
                     }
@@ -103,4 +103,3 @@ public struct Unit4View: View {
 #Preview(traits: .portrait) {
     Unit4View(viewModel: Unit4ViewModel(), onAdvance: {})
 }
-

@@ -6,6 +6,7 @@ final class AppStore: ObservableObject {
     private let familyStore: FamilyStore
     private var cancellables = Set<AnyCancellable>()
     private var currentChildID: UUID?
+    private var taskProgressDayIdentifier: DateComponents
 
     @Published var destination: AppDestination {
         didSet {
@@ -35,11 +36,14 @@ final class AppStore: ObservableObject {
             LocalPersistence.load(AppProgressSnapshot.self, forKey: LocalPersistenceKey.appProgress($0))
         } ?? .empty
 
+        let initialDayIdentifier = snapshot.taskProgressDayIdentifier ?? Self.currentDayIdentifier()
         self.currentChildID = familyStore.activeChildID
+        self.taskProgressDayIdentifier = initialDayIdentifier
         self.destination = snapshot.lastDestination
         self.earnedCoins = snapshot.earnedCoins
         self.completedTaskIDs = Set(snapshot.completedTaskIDs)
         self.currentStreak = snapshot.currentStreak
+        ensureDailyTaskProgressIsCurrent()
 
         familyStore.$activeChildID
             .removeDuplicates()
@@ -55,7 +59,8 @@ final class AppStore: ObservableObject {
             earnedCoins: earnedCoins,
             completedTaskIDs: Array(completedTaskIDs),
             currentStreak: currentStreak,
-            lastDestination: destination
+            lastDestination: destination,
+            taskProgressDayIdentifier: taskProgressDayIdentifier
         )
         LocalPersistence.save(snapshot, forKey: LocalPersistenceKey.appProgress(currentChildID))
     }
@@ -64,6 +69,7 @@ final class AppStore: ObservableObject {
         currentChildID = childID
 
         guard let childID else {
+            taskProgressDayIdentifier = Self.currentDayIdentifier()
             earnedCoins = 0
             completedTaskIDs = []
             currentStreak = 0
@@ -72,9 +78,11 @@ final class AppStore: ObservableObject {
         }
 
         let snapshot = LocalPersistence.load(AppProgressSnapshot.self, forKey: LocalPersistenceKey.appProgress(childID)) ?? .empty
+        taskProgressDayIdentifier = snapshot.taskProgressDayIdentifier ?? Self.currentDayIdentifier()
         earnedCoins = snapshot.earnedCoins
         completedTaskIDs = Set(snapshot.completedTaskIDs)
         currentStreak = snapshot.currentStreak
+        ensureDailyTaskProgressIsCurrent()
 
         if destination != .onboarding && destination != .routineSetup {
             destination = .home
@@ -82,6 +90,7 @@ final class AppStore: ObservableObject {
     }
 
     func prepareLaunchDestination(hasChildren: Bool, hasActiveChild: Bool) {
+        ensureDailyTaskProgressIsCurrent()
         if !hasChildren {
             destination = .welcome
         } else if !hasActiveChild {
@@ -128,6 +137,7 @@ final class AppStore: ObservableObject {
     }
 
     func completeTask(_ task: StudyTask) {
+        ensureDailyTaskProgressIsCurrent()
         guard !completedTaskIDs.contains(task.id) else { return }
         completedTaskIDs.insert(task.id)
         earnedCoins += task.rewardCoins
@@ -151,6 +161,22 @@ final class AppStore: ObservableObject {
     }
 
     func markDailyRoutineCompleted() {
+        ensureDailyTaskProgressIsCurrent()
         currentStreak = max(currentStreak, 1)
+    }
+
+    func refreshDailyTaskStateIfNeeded() {
+        ensureDailyTaskProgressIsCurrent()
+    }
+
+    private func ensureDailyTaskProgressIsCurrent() {
+        let today = Self.currentDayIdentifier()
+        guard taskProgressDayIdentifier != today else { return }
+        taskProgressDayIdentifier = today
+        completedTaskIDs = []
+    }
+
+    private static func currentDayIdentifier(calendar: Calendar = .current, date: Date = Date()) -> DateComponents {
+        calendar.dateComponents([.year, .month, .day], from: date)
     }
 }

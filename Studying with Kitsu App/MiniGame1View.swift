@@ -91,7 +91,7 @@ public struct MiniGame1View: View {
                             Capsule()
                                 .fill(
                                     LinearGradient(
-                                        colors: [Color.green, Color.green.opacity(0.6), Color.yellow],
+                                        colors: [AppTheme.limeDark, AppTheme.coral, AppTheme.sunflower],
                                         startPoint: .leading,
                                         endPoint: .trailing
                                     )

@@ -14,7 +14,7 @@ struct AppRootView: View {
             LinearGradient(
                 colors: [
                     AppTheme.sky,
-                    Color(red: 0.68, green: 0.91, blue: 1.0),
+                    Color(red: 0.99, green: 0.84, blue: 0.88),
                     AppTheme.cream
                 ],
                 startPoint: .topLeading,
@@ -38,6 +38,7 @@ struct AppRootView: View {
         }
         .animation(.easeInOut, value: appStore.destination)
         .onAppear {
+            appStore.refreshDailyTaskStateIfNeeded()
             if familyStore.hasChildren && !parentSecurityStore.hasConfiguredPIN {
                 appStore.goToParentPinSetup()
                 return
@@ -48,7 +49,9 @@ struct AppRootView: View {
             )
         }
         .onChange(of: scenePhase) { _, newPhase in
-            if newPhase != .active {
+            if newPhase == .active {
+                appStore.refreshDailyTaskStateIfNeeded()
+            } else {
                 parentSecurityStore.clearVerification()
             }
         }
