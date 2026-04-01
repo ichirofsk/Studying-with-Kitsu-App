@@ -8,6 +8,7 @@ struct AppRootView: View {
     @ObservedObject var routineStore: RoutineStore
     @ObservedObject var rewardStore: RewardStore
     @ObservedObject var journeyLogbookStore: JourneyLogbookStore
+    @ObservedObject var weeklyCheckpointStore: WeeklyCheckpointStore
     @ObservedObject var parentSecurityStore: ParentSecurityStore
 
     var body: some View {
@@ -143,6 +144,12 @@ struct AppRootView: View {
                 appStore: appStore,
                 childStore: childStore,
                 journeyLogbookStore: journeyLogbookStore
+            )
+        case .weeklyCheckpoint:
+            WeeklyCheckpointView(
+                appStore: appStore,
+                childStore: childStore,
+                weeklyCheckpointStore: weeklyCheckpointStore
             )
         case .rewards:
             RewardsHubView(

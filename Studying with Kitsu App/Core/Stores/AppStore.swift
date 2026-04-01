@@ -164,6 +164,10 @@ final class AppStore: ObservableObject {
         destination = .journeyLogbook
     }
 
+    func goToWeeklyCheckpoint() {
+        destination = .weeklyCheckpoint
+    }
+
     func goToRewards() {
         destination = .rewards
     }
@@ -197,6 +201,12 @@ final class AppStore: ObservableObject {
     }
 
     func awardJourneyLogbookCoins(_ coins: Int) {
+        guard coins > 0 else { return }
+        earnedCoins += coins
+        totalCoinsEarned += coins
+    }
+
+    func awardBonusCoins(_ coins: Int) {
         guard coins > 0 else { return }
         earnedCoins += coins
         totalCoinsEarned += coins

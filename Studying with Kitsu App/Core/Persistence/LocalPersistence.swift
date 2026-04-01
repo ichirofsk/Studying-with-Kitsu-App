@@ -23,6 +23,10 @@ enum LocalPersistenceKey {
     static func journeyLogbook(_ childID: UUID) -> String {
         "kitsu.child.\(childID.uuidString).journeyLogbook"
     }
+
+    static func weeklyCheckpoint(_ childID: UUID) -> String {
+        "kitsu.child.\(childID.uuidString).weeklyCheckpoint"
+    }
 }
 
 enum LocalPersistence {

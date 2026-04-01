@@ -35,6 +35,14 @@ struct HomeDashboardView: View {
                         }
 
                         featureCard(
+                            title: "Weekly Checkpoint",
+                            subtitle: "Review the week and celebrate what stood out",
+                            accent: AppTheme.coral
+                        ) {
+                            appStore.goToWeeklyCheckpoint()
+                        }
+
+                        featureCard(
                             title: "Rewards",
                             subtitle: "Trade coins for playful family rewards",
                             accent: AppTheme.sunflower
@@ -58,6 +66,14 @@ struct HomeDashboardView: View {
                             accent: AppTheme.skyDark
                         ) {
                             appStore.goToJourneyLogbook()
+                        }
+
+                        featureCard(
+                            title: "Weekly Checkpoint",
+                            subtitle: "Review the week and celebrate what stood out",
+                            accent: AppTheme.coral
+                        ) {
+                            appStore.goToWeeklyCheckpoint()
                         }
 
                         featureCard(
