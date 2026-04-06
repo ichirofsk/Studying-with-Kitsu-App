@@ -42,7 +42,7 @@ struct RoutineSetupView: View {
                                         .font(.title3.weight(.semibold))
                                         .foregroundStyle(AppTheme.ink)
                                     Text(task.detail)
-                                        .foregroundStyle(.secondary)
+                                        .foregroundStyle(.black)
                                     Text("+\(task.rewardCoins) coins")
                                         .font(.subheadline.weight(.bold))
                                         .foregroundStyle(AppTheme.coral)
@@ -75,8 +75,11 @@ struct RoutineSetupView: View {
     }
 
     private var cancelButton: some View {
-        Button("Cancel") {
+        Button {
             onCancel()
+        } label: {
+            Text("Cancel")
+                .kitsuButtonTextShadow()
         }
         .buttonStyle(.borderedProminent)
         .tint(AppTheme.coral)

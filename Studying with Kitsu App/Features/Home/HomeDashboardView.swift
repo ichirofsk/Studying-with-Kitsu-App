@@ -196,12 +196,15 @@ struct HomeDashboardView: View {
 
     private func heroAside(alignment: HorizontalAlignment, imageSize: CGFloat) -> some View {
         VStack(alignment: alignment, spacing: 10) {
-            Button("Children") {
+            Button {
                 if parentSecurityStore.hasConfiguredPIN && !parentSecurityStore.isParentVerified {
                     showParentGate = true
                 } else {
                     appStore.goToChildPicker()
                 }
+            } label: {
+                Text("Children")
+                    .kitsuButtonTextShadow()
             }
             .font(.headline.weight(.bold))
             .buttonStyle(.borderedProminent)
@@ -230,8 +233,10 @@ struct HomeDashboardView: View {
                 Text(title)
                     .font(.title3.weight(.bold))
                     .foregroundStyle(AppTheme.ink)
+                    .kitsuButtonTextShadow()
                 Text(subtitle)
                     .foregroundStyle(AppTheme.ink.opacity(0.72))
+                    .kitsuButtonTextShadow()
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         }

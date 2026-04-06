@@ -15,21 +15,24 @@ struct JourneyLogbookView: View {
 
     var body: some View {
         ZStack {
+            screenBackground.ignoresSafeArea()
+
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
-                    HStack {
-                        Text("Journey logbook")
-                            .font(.system(size: 32, weight: .bold, design: .rounded))
-                            .foregroundStyle(AppTheme.ink)
-
-                        Spacer()
-
-                        Button("Back") {
+                    VStack(alignment: .leading, spacing: 12) {
+                        Button {
                             appStore.goToHome()
+                        } label: {
+                            Text("Back")
+                                .kitsuButtonTextShadow()
                         }
                         .font(.headline.weight(.bold))
                         .buttonStyle(.borderedProminent)
                         .tint(AppTheme.skyDark)
+
+                        Text("Journey logbook")
+                            .font(.system(size: 32, weight: .bold, design: .rounded))
+                            .foregroundStyle(AppTheme.ink)
                     }
 
                     DashboardCard {
@@ -105,6 +108,9 @@ struct JourneyLogbookView: View {
         .onDisappear {
             rewardDismissTask?.cancel()
         }
+        .dashboardBackSwipe {
+            appStore.goToHome()
+        }
         .sheet(isPresented: $showAddLesson) {
             addLessonSheet
         }
@@ -125,8 +131,11 @@ struct JourneyLogbookView: View {
                     : "Today's lesson is already saved. Come back tomorrow for a new entry.")
                     .foregroundStyle(AppTheme.ink.opacity(0.72))
 
-                Button(journeyLogbookStore.canAddEntryToday() ? "Add today's lesson" : "Today's lesson already added") {
+                Button {
                     showAddLesson = true
+                } label: {
+                    Text(journeyLogbookStore.canAddEntryToday() ? "Add today's lesson" : "Today's lesson already added")
+                        .kitsuButtonTextShadow(active: journeyLogbookStore.canAddEntryToday())
                 }
                 .font(.headline.weight(.bold))
                 .buttonStyle(.borderedProminent)
@@ -147,8 +156,11 @@ struct JourneyLogbookView: View {
                 Text("Open the diary archive and browse every saved lesson separated by date.")
                     .foregroundStyle(AppTheme.ink.opacity(0.72))
 
-                Button("Open album") {
+                Button {
                     showAlbum = true
+                } label: {
+                    Text("Open album")
+                        .kitsuButtonTextShadow()
                 }
                 .font(.headline.weight(.bold))
                 .buttonStyle(.borderedProminent)
@@ -186,10 +198,10 @@ struct JourneyLogbookView: View {
                 Spacer()
             }
             .padding(24)
-            .background(AppTheme.cream.ignoresSafeArea())
+            .background(screenBackground.ignoresSafeArea())
             .navigationTitle("")
             .navigationBarTitleDisplayMode(.inline)
-            .toolbarBackground(AppTheme.cream, for: .navigationBar)
+            .toolbarBackground(AppTheme.skyDark.opacity(0.95), for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
             .toolbarColorScheme(.light, for: .navigationBar)
             .toolbar {
@@ -199,14 +211,17 @@ struct JourneyLogbookView: View {
                         .foregroundStyle(AppTheme.skyDark)
                 }
                 ToolbarItem(placement: .topBarLeading) {
-                    Button("Cancel") {
+                    Button {
                         todayLessonText = ""
                         showAddLesson = false
+                    } label: {
+                        Text("Cancel")
+                            .kitsuButtonTextShadow()
                     }
                     .font(.headline.weight(.bold))
                 }
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("Save") {
+                    Button {
                         let saved = journeyLogbookStore.addTodayEntry(todayLessonText)
                         guard saved else {
                             showAddLesson = false
@@ -217,6 +232,9 @@ struct JourneyLogbookView: View {
                         todayLessonText = ""
                         showAddLesson = false
                         showRewardFeedback()
+                    } label: {
+                        Text("Save")
+                            .kitsuButtonTextShadow(active: !todayLessonText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                     }
                     .font(.headline.weight(.bold))
                     .disabled(todayLessonText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
@@ -257,13 +275,19 @@ struct JourneyLogbookView: View {
                 }
                 .padding(24)
             }
-            .background(AppTheme.cream.ignoresSafeArea())
+            .background(screenBackground.ignoresSafeArea())
             .navigationTitle("Log album")
             .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackground(AppTheme.skyDark.opacity(0.95), for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
+            .toolbarColorScheme(.light, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("Close") {
+                    Button {
                         showAlbum = false
+                    } label: {
+                        Text("Close")
+                            .kitsuButtonTextShadow()
                     }
                     .font(.headline.weight(.bold))
                 }
@@ -274,6 +298,10 @@ struct JourneyLogbookView: View {
     private var displayName: String {
         let trimmed = childStore.profile.name.trimmingCharacters(in: .whitespacesAndNewlines)
         return trimmed.isEmpty ? "the child" : trimmed
+    }
+
+    private var screenBackground: AccentScreenBackground {
+        AccentScreenBackground(accent: AppTheme.skyDark)
     }
 
     private var groupedEntries: [EntryGroup] {

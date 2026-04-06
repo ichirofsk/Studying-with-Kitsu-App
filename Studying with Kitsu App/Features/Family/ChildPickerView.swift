@@ -170,10 +170,13 @@ struct ChildPickerView: View {
             }
             .buttonStyle(.plain)
 
-            Button("Open") {
+            Button {
                 familyStore.selectChild(child.id)
                 parentSecurityStore.clearVerification()
                 appStore.goToHome()
+            } label: {
+                Text("Open")
+                    .kitsuButtonTextShadow()
             }
             .font(.headline.weight(.bold))
             .buttonStyle(.borderedProminent)

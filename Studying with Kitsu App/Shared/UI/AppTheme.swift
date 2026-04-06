@@ -11,3 +11,30 @@ enum AppTheme {
     static let cream = Color(red: 0.99, green: 0.95, blue: 0.96)
     static let cloud = Color(red: 1.00, green: 0.98, blue: 0.99)
 }
+
+struct AccentScreenBackground: View {
+    let accent: Color
+
+    var body: some View {
+        LinearGradient(
+            colors: [
+                accent.opacity(0.92),
+                accent.opacity(0.52),
+                AppTheme.cream
+            ],
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing
+        )
+        .overlay(
+            RadialGradient(
+                colors: [
+                    Color.white.opacity(0.24),
+                    Color.clear
+                ],
+                center: .topTrailing,
+                startRadius: 20,
+                endRadius: 420
+            )
+        )
+    }
+}

@@ -27,19 +27,26 @@ struct DailyTasksHubView: View {
     }
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 18) {
-                header
-                progressCard
-                taskList
-                footerActions
+        ZStack {
+            screenBackground.ignoresSafeArea()
+
+            ScrollView {
+                VStack(alignment: .leading, spacing: 18) {
+                    header
+                    progressCard
+                    taskList
+                    footerActions
+                }
+                .frame(maxWidth: 980)
+                .padding(horizontalPadding)
+                .frame(maxWidth: .infinity)
             }
-            .frame(maxWidth: 980)
-            .padding(horizontalPadding)
-            .frame(maxWidth: .infinity)
         }
         .onAppear {
             appStore.refreshDailyTaskStateIfNeeded()
+        }
+        .dashboardBackSwipe {
+            appStore.goToHome()
         }
         .sheet(
             isPresented: Binding(
@@ -106,15 +113,20 @@ struct DailyTasksHubView: View {
 
     private var header: some View {
         ViewThatFits(in: .horizontal) {
-            HStack(alignment: .top) {
-                headerCopy
+            VStack(alignment: .leading, spacing: 14) {
+                backButton
 
-                Spacer(minLength: 12)
+                HStack(alignment: .top) {
+                    headerCopy
 
-                headerActions
+                    Spacer(minLength: 12)
+
+                    headerActions
+                }
             }
 
             VStack(alignment: .leading, spacing: 14) {
+                backButton
                 headerCopy
                 headerActions
             }
@@ -144,12 +156,12 @@ struct DailyTasksHubView: View {
                 DashboardCard {
                     if isCompactLayout {
                         VStack(alignment: .leading, spacing: 14) {
-                            taskMainContent(task)
+                            taskTapArea(task)
                             taskActions(task)
                         }
                     } else {
                         HStack(alignment: .center, spacing: 16) {
-                            taskMainContent(task)
+                            taskTapArea(task)
                             Spacer()
                             taskActions(task)
                                 .frame(maxWidth: 160, alignment: .trailing)
@@ -201,36 +213,40 @@ struct DailyTasksHubView: View {
         Group {
             if isCompactLayout {
                 VStack(alignment: .leading, spacing: 10) {
-                    Button("Add task") {
+                    Button {
                         prepareEditor(for: .create)
+                    } label: {
+                        Text("Add task")
+                            .kitsuButtonTextShadow()
                     }
                     .font(.headline.weight(.bold))
                     .buttonStyle(.bordered)
-
-                    Button("Dashboard") {
-                        appStore.goToHome()
-                    }
-                    .font(.headline.weight(.bold))
-                    .buttonStyle(.borderedProminent)
-                    .tint(AppTheme.skyDark)
                 }
             } else {
                 HStack(spacing: 10) {
-                    Button("Add task") {
+                    Button {
                         prepareEditor(for: .create)
+                    } label: {
+                        Text("Add task")
+                            .kitsuButtonTextShadow()
                     }
                     .font(.headline.weight(.bold))
                     .buttonStyle(.bordered)
-
-                    Button("Dashboard") {
-                        appStore.goToHome()
-                    }
-                    .font(.headline.weight(.bold))
-                    .buttonStyle(.borderedProminent)
-                    .tint(AppTheme.skyDark)
                 }
             }
         }
+    }
+
+    private var backButton: some View {
+        Button {
+            appStore.goToHome()
+        } label: {
+            Text("Back")
+                .kitsuButtonTextShadow()
+        }
+        .font(.headline.weight(.bold))
+        .buttonStyle(.borderedProminent)
+        .tint(AppTheme.skyDark)
     }
 
     private var progressCopy: some View {
@@ -277,6 +293,11 @@ struct DailyTasksHubView: View {
                 Text(task.title)
                     .font(.title3.weight(.heavy))
                     .foregroundStyle(AppTheme.ink)
+                if !task.isDefault {
+                    Text("Tap to edit")
+                        .font(.caption.weight(.heavy))
+                        .foregroundStyle(AppTheme.skyDark)
+                }
                 if !task.detail.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                     Text(task.detail)
                         .foregroundStyle(AppTheme.ink.opacity(0.68))
@@ -288,32 +309,20 @@ struct DailyTasksHubView: View {
         }
     }
 
+    private func taskTapArea(_ task: StudyTask) -> some View {
+        taskMainContent(task)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .contentShape(Rectangle())
+            .onTapGesture {
+                guard !task.isDefault else { return }
+                prepareEditor(for: .edit(task))
+            }
+    }
+
     private func taskActions(_ task: StudyTask) -> some View {
         VStack(alignment: isCompactLayout ? .leading : .trailing, spacing: 10) {
             if task.isDefault {
                 tagLabel(title: "Default", color: AppTheme.skyDark)
-            } else {
-                HStack(spacing: 8) {
-                    Button {
-                        prepareEditor(for: .edit(task))
-                    } label: {
-                        Image(systemName: "pencil")
-                    }
-                    .font(.headline.weight(.bold))
-                    .buttonStyle(.bordered)
-
-                    Button {
-                        prepareRemoval(for: task)
-                    } label: {
-                        Image(systemName: "trash")
-                            .font(.system(size: 13, weight: .bold))
-                            .foregroundStyle(AppTheme.coral)
-                            .padding(10)
-                            .background(AppTheme.coral.opacity(0.12))
-                            .clipShape(Circle())
-                    }
-                    .buttonStyle(.plain)
-                }
             }
 
             Button {
@@ -327,14 +336,17 @@ struct DailyTasksHubView: View {
                         Text("Done")
                             .font(.headline.weight(.bold))
                             .foregroundStyle(.black)
+                            .kitsuButtonTextShadow()
                         TimelineView(.periodic(from: .now, by: 1)) { context in
                             Text(countdownText(until: nextTaskResetDate(from: context.date), now: context.date))
                                 .font(.caption.weight(.bold))
                                 .foregroundStyle(AppTheme.skyDark)
+                                .kitsuButtonTextShadow()
                         }
                     }
                 } else {
                     Text("Mark done")
+                        .kitsuButtonTextShadow()
                 }
             }
             .buttonStyle(.borderedProminent)
@@ -348,6 +360,7 @@ struct DailyTasksHubView: View {
             Text(title)
                 .font(.system(.headline, design: .rounded, weight: .bold))
                 .foregroundStyle(AppTheme.ink)
+                .kitsuButtonTextShadow()
                 .padding(.horizontal, 22)
                 .padding(.vertical, 14)
                 .frame(maxWidth: isCompactLayout ? .infinity : nil)
@@ -404,6 +417,7 @@ struct DailyTasksHubView: View {
         routineStore.removeCustomTask(id: pendingTask.id)
         appStore.completedTaskIDs.remove(pendingTask.id)
         parentSecurityStore.clearVerification()
+        editorMode = nil
         taskPendingRemoval = nil
         showRemovalAlert = false
     }
@@ -475,13 +489,27 @@ struct DailyTasksHubView: View {
                 Text("Default tasks stay protected. Only custom tasks can be edited here.")
                     .foregroundStyle(AppTheme.ink.opacity(0.65))
 
+                if case .edit(let task) = mode, !task.isDefault {
+                    Button(role: .destructive) {
+                        taskPendingRemoval = task
+                        showRemovalAlert = true
+                    } label: {
+                        Label("Delete task", systemImage: "trash")
+                            .frame(maxWidth: .infinity)
+                            .kitsuButtonTextShadow()
+                    }
+                    .font(.headline.weight(.bold))
+                    .buttonStyle(.borderedProminent)
+                    .tint(AppTheme.coral)
+                }
+
                 Spacer()
             }
             .padding(24)
-            .background(AppTheme.cream.ignoresSafeArea())
+            .background(screenBackground.ignoresSafeArea())
             .navigationTitle("")
             .navigationBarTitleDisplayMode(.inline)
-            .toolbarBackground(AppTheme.cream, for: .navigationBar)
+            .toolbarBackground(AppTheme.lime.opacity(0.95), for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
             .toolbarColorScheme(.light, for: .navigationBar)
             .toolbar {
@@ -491,14 +519,17 @@ struct DailyTasksHubView: View {
                         .foregroundStyle(AppTheme.skyDark)
                 }
                 ToolbarItem(placement: .topBarLeading) {
-                    Button("Cancel") {
+                    Button {
                         parentSecurityStore.clearVerification()
                         editorMode = nil
+                    } label: {
+                        Text("Cancel")
+                            .kitsuButtonTextShadow()
                     }
                     .font(.headline.weight(.bold))
                 }
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("Save") {
+                    Button {
                         let rewardCoins = Int(editorCoins) ?? 0
 
                         switch mode {
@@ -510,6 +541,9 @@ struct DailyTasksHubView: View {
 
                         parentSecurityStore.clearVerification()
                         editorMode = nil
+                    } label: {
+                        Text("Save")
+                            .kitsuButtonTextShadow()
                     }
                     .font(.headline.weight(.bold))
                 }
@@ -524,6 +558,10 @@ struct DailyTasksHubView: View {
 }
 
 private extension DailyTasksHubView {
+    var screenBackground: AccentScreenBackground {
+        AccentScreenBackground(accent: AppTheme.lime)
+    }
+
     var isCompactLayout: Bool {
         horizontalSizeClass == .compact
     }

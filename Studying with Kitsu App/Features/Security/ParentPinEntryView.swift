@@ -47,8 +47,11 @@ struct ParentPinEntryView: View {
                     }
 
                     HStack(spacing: 12) {
-                        Button("Cancel") {
+                        Button {
                             onCancel()
+                        } label: {
+                            Text("Cancel")
+                                .kitsuButtonTextShadow()
                         }
                         .buttonStyle(.bordered)
 

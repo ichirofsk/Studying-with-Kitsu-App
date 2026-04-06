@@ -11,63 +11,71 @@ struct WeeklyCheckpointView: View {
     @State private var latestResult: WeeklyCheckpointPlay?
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
-                HStack {
-                    Text("Weekly Checkpoint")
-                        .font(.system(size: 32, weight: .bold, design: .rounded))
-                        .foregroundStyle(AppTheme.ink)
+        ZStack {
+            screenBackground.ignoresSafeArea()
 
-                    Spacer()
-
-                    Button("Back") {
-                        appStore.goToHome()
-                    }
-                    .font(.headline.weight(.bold))
-                    .buttonStyle(.borderedProminent)
-                    .tint(AppTheme.skyDark)
-                }
-
-                DashboardCard {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 20) {
                     VStack(alignment: .leading, spacing: 12) {
-                        Text("A once-a-week question game for the family")
-                            .font(.title3.weight(.heavy))
+                        Button {
+                            appStore.goToHome()
+                        } label: {
+                            Text("Back")
+                                .kitsuButtonTextShadow()
+                        }
+                        .font(.headline.weight(.bold))
+                        .buttonStyle(.borderedProminent)
+                        .tint(AppTheme.skyDark)
+
+                        Text("Weekly Checkpoint")
+                            .font(.system(size: 32, weight: .bold, design: .rounded))
                             .foregroundStyle(AppTheme.ink)
-
-                        Text("From Sunday 00:00 to Saturday 23:59, the child can play this checkpoint only once. After a play, it unlocks again only on the next Sunday at 00:00.")
-                            .foregroundStyle(AppTheme.ink.opacity(0.72))
-                    }
-                }
-
-                ViewThatFits(in: .horizontal) {
-                    HStack(spacing: 16) {
-                        startGameCard
-                        instructionsCard
-                        gameLogCard
                     }
 
-                    VStack(spacing: 16) {
-                        startGameCard
-                        instructionsCard
-                        gameLogCard
-                    }
-                }
-
-                if let latestResult {
                     DashboardCard {
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text("Latest result")
-                                .font(.headline.weight(.bold))
-                                .foregroundStyle(AppTheme.skyDark)
-                            Text("\(displayName) got \(latestResult.correctAnswers) / \(latestResult.totalQuestions) right and earned \(latestResult.coinsAwarded) coins.")
+                        VStack(alignment: .leading, spacing: 12) {
+                            Text("A once-a-week question game for the family")
+                                .font(.title3.weight(.heavy))
                                 .foregroundStyle(AppTheme.ink)
+
+                            Text("From Sunday 00:00 to Saturday 23:59, the child can play this checkpoint only once. After a play, it unlocks again only on the next Sunday at 00:00.")
+                                .foregroundStyle(AppTheme.ink.opacity(0.72))
+                        }
+                    }
+
+                    ViewThatFits(in: .horizontal) {
+                        HStack(spacing: 16) {
+                            startGameCard
+                            instructionsCard
+                            gameLogCard
+                        }
+
+                        VStack(spacing: 16) {
+                            startGameCard
+                            instructionsCard
+                            gameLogCard
+                        }
+                    }
+
+                    if let latestResult {
+                        DashboardCard {
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text("Latest result")
+                                    .font(.headline.weight(.bold))
+                                    .foregroundStyle(AppTheme.skyDark)
+                                Text("\(displayName) got \(latestResult.correctAnswers) / \(latestResult.totalQuestions) right and earned \(latestResult.coinsAwarded) coins.")
+                                    .foregroundStyle(AppTheme.ink)
+                            }
                         }
                     }
                 }
+                .frame(maxWidth: 980)
+                .padding(24)
+                .frame(maxWidth: .infinity)
             }
-            .frame(maxWidth: 980)
-            .padding(24)
-            .frame(maxWidth: .infinity)
+        }
+        .dashboardBackSwipe {
+            appStore.goToHome()
         }
         .sheet(isPresented: $showInstructions) {
             instructionsSheet
@@ -111,8 +119,11 @@ struct WeeklyCheckpointView: View {
                     }
                 }
 
-                Button(weeklyCheckpointStore.canPlayThisWeek() ? "Start weekly game" : "Already played this week") {
+                Button {
                     showGame = true
+                } label: {
+                    Text(weeklyCheckpointStore.canPlayThisWeek() ? "Start weekly game" : "Already played this week")
+                        .kitsuButtonTextShadow(active: weeklyCheckpointStore.canPlayThisWeek())
                 }
                 .font(.headline.weight(.bold))
                 .buttonStyle(.borderedProminent)
@@ -133,8 +144,11 @@ struct WeeklyCheckpointView: View {
                 Text("Read the turn flow and scoring before starting the weekly game.")
                     .foregroundStyle(AppTheme.ink.opacity(0.72))
 
-                Button("Open instructions") {
+                Button {
                     showInstructions = true
+                } label: {
+                    Text("Open instructions")
+                        .kitsuButtonTextShadow()
                 }
                 .font(.headline.weight(.bold))
                 .buttonStyle(.borderedProminent)
@@ -153,8 +167,11 @@ struct WeeklyCheckpointView: View {
                 Text("See each week's run, the number of correct answers, and the coins earned.")
                     .foregroundStyle(AppTheme.ink.opacity(0.72))
 
-                Button("Open game log") {
+                Button {
                     showGameLog = true
+                } label: {
+                    Text("Open game log")
+                        .kitsuButtonTextShadow()
                 }
                 .font(.headline.weight(.bold))
                 .buttonStyle(.borderedProminent)
@@ -181,8 +198,11 @@ struct WeeklyCheckpointView: View {
             }
             .foregroundStyle(AppTheme.ink)
             .padding(24)
-            .background(AppTheme.cream.ignoresSafeArea())
+            .background(screenBackground.ignoresSafeArea())
             .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackground(AppTheme.coral.opacity(0.95), for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
+            .toolbarColorScheme(.light, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .principal) {
                     Text("Instructions")
@@ -191,8 +211,11 @@ struct WeeklyCheckpointView: View {
                 }
 
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("Close") {
+                    Button {
                         showInstructions = false
+                    } label: {
+                        Text("Close")
+                            .kitsuButtonTextShadow()
                     }
                     .font(.headline.weight(.bold))
                 }
@@ -228,13 +251,19 @@ struct WeeklyCheckpointView: View {
                 }
                 .padding(24)
             }
-            .background(AppTheme.cream.ignoresSafeArea())
+            .background(screenBackground.ignoresSafeArea())
             .navigationTitle("Game log")
             .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackground(AppTheme.coral.opacity(0.95), for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
+            .toolbarColorScheme(.light, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("Close") {
+                    Button {
                         showGameLog = false
+                    } label: {
+                        Text("Close")
+                            .kitsuButtonTextShadow()
                     }
                     .font(.headline.weight(.bold))
                 }
@@ -245,6 +274,10 @@ struct WeeklyCheckpointView: View {
     private var displayName: String {
         let trimmed = childStore.profile.name.trimmingCharacters(in: .whitespacesAndNewlines)
         return trimmed.isEmpty ? "The child" : trimmed
+    }
+
+    private var screenBackground: AccentScreenBackground {
+        AccentScreenBackground(accent: AppTheme.coral)
     }
 
     private func countdownText(until resetDate: Date, now: Date) -> String {
@@ -309,8 +342,11 @@ private struct WeeklyCheckpointGameSheet: View {
                         title: "Adult turn \(questionNumber):",
                         message: "Think of a question!"
                     ) {
-                        Button("Ready") {
+                        Button {
                             beginKidTurn()
+                        } label: {
+                            Text("Ready")
+                                .kitsuButtonTextShadow()
                         }
                         .font(.headline.weight(.bold))
                         .buttonStyle(.borderedProminent)
@@ -323,15 +359,21 @@ private struct WeeklyCheckpointGameSheet: View {
                         message: "Answer!"
                     ) {
                         HStack(spacing: 12) {
-                            Button("Right") {
+                            Button {
                                 submitAnswer(isRight: true)
+                            } label: {
+                                Text("Right")
+                                    .kitsuButtonTextShadow()
                             }
                             .font(.headline.weight(.bold))
                             .buttonStyle(.borderedProminent)
                             .tint(AppTheme.limeDark)
 
-                            Button("Wrong") {
+                            Button {
                                 submitAnswer(isRight: false)
+                            } label: {
+                                Text("Wrong")
+                                    .kitsuButtonTextShadow()
                             }
                             .font(.headline.weight(.bold))
                             .buttonStyle(.borderedProminent)
@@ -351,7 +393,7 @@ private struct WeeklyCheckpointGameSheet: View {
                             Text("Coins earned: \(coinsAwarded)")
                                 .font(.title3.weight(.heavy))
                                 .foregroundStyle(AppTheme.skyDark)
-                            Button("Close") {
+                            Button {
                                 onFinish(
                                     WeeklyCheckpointResult(
                                         correctAnswers: correctAnswers,
@@ -360,6 +402,9 @@ private struct WeeklyCheckpointGameSheet: View {
                                     )
                                 )
                                 dismiss()
+                            } label: {
+                                Text("Close")
+                                    .kitsuButtonTextShadow()
                             }
                             .font(.headline.weight(.bold))
                             .buttonStyle(.borderedProminent)
@@ -371,7 +416,7 @@ private struct WeeklyCheckpointGameSheet: View {
                 Spacer()
             }
             .padding(24)
-            .background(AppTheme.cream.ignoresSafeArea())
+            .background(AccentScreenBackground(accent: AppTheme.coral).ignoresSafeArea())
             .interactiveDismissDisabled(phase != .finished)
             .onDisappear {
                 timerTask?.cancel()

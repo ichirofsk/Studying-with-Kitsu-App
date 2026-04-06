@@ -50,6 +50,11 @@ final class RewardStore: ObservableObject {
         rewards[3].title = titles.button4
     }
 
+    func removeReward(id: UUID) {
+        guard rewards.contains(where: { $0.id == id }) else { return }
+        rewards.removeAll { $0.id == id }
+    }
+
     private func reload(for childID: UUID?) {
         currentChildID = childID
         guard let childID else {

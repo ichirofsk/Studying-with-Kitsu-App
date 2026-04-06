@@ -11,6 +11,7 @@ struct KitsuPrimaryButton: View {
             Text(title)
                 .font(.system(.headline, design: .rounded, weight: .bold))
                 .foregroundStyle(Color.white)
+                .kitsuButtonTextShadow(active: isEnabled)
                 .padding(.horizontal, 24)
                 .padding(.vertical, 14)
                 .frame(minWidth: 180)

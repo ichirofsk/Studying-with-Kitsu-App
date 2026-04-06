@@ -19,6 +19,8 @@ struct RewardsHubView: View {
 
     var body: some View {
         ZStack {
+            screenBackground.ignoresSafeArea()
+
             ScrollView {
                 VStack(alignment: .leading, spacing: 18) {
                     header
@@ -38,9 +40,13 @@ struct RewardsHubView: View {
                     .allowsHitTesting(false)
             }
         }
+        .background(screenBackground.ignoresSafeArea())
         .animation(.spring(response: 0.35, dampingFraction: 0.82), value: celebrationRewardCost)
         .onDisappear {
             celebrationDismissTask?.cancel()
+        }
+        .dashboardBackSwipe {
+            appStore.goToHome()
         }
         .sheet(isPresented: $showIconPicker) {
             rewardIconPicker
@@ -94,15 +100,18 @@ struct RewardsHubView: View {
 
     private var header: some View {
         ViewThatFits(in: .horizontal) {
-            HStack(alignment: .top) {
-                headerCopy
-                Spacer(minLength: 12)
-                dashboardButton
+            VStack(alignment: .leading, spacing: 14) {
+                backButton
+
+                HStack(alignment: .top) {
+                    headerCopy
+                    Spacer(minLength: 12)
+                }
             }
 
             VStack(alignment: .leading, spacing: 14) {
+                backButton
                 headerCopy
-                dashboardButton
             }
         }
     }
@@ -129,42 +138,9 @@ struct RewardsHubView: View {
             ForEach(Array(rewardStore.rewards.enumerated()), id: \.element.id) { index, reward in
                 DashboardCard {
                     VStack(alignment: .leading, spacing: 14) {
-                        HStack(alignment: .center, spacing: 14) {
-                            ZStack {
-                                RoundedRectangle(cornerRadius: 18, style: .continuous)
-                                    .fill(color(for: index).opacity(0.18))
-                                    .frame(width: 62, height: 62)
-                                rewardBadge(for: reward, index: index, size: 62)
-                            }
-
-                            VStack(alignment: .leading, spacing: 5) {
-                                Text(reward.title)
-                                    .font(.title3.weight(.heavy))
-                                    .foregroundStyle(AppTheme.ink)
-                                Text("\(reward.cost) coins")
-                                    .font(.subheadline.weight(.bold))
-                                    .foregroundStyle(color(for: index))
-                            }
-
-                            Spacer()
-                        }
+                        rewardTapArea(for: reward, index: index)
 
                         HStack(spacing: 10) {
-                            Button {
-                                editorText = reward.title
-                                editorSymbolName = reward.symbolName ?? icon(for: index)
-                                editorImageData = reward.imageData
-                                if parentSecurityStore.hasConfiguredPIN && !parentSecurityStore.isParentVerified {
-                                    pendingEditorIndex = index
-                                } else {
-                                    editorIndex = index
-                                }
-                            } label: {
-                                Image(systemName: "pencil")
-                            }
-                            .font(.headline.weight(.bold))
-                            .buttonStyle(.bordered)
-
                             Button {
                                 guard appStore.canRedeem(reward) else { return }
                                 appStore.redeem(reward)
@@ -188,6 +164,35 @@ struct RewardsHubView: View {
                     }
                 }
             }
+        }
+    }
+
+    private func rewardTapArea(for reward: RewardItem, index: Int) -> some View {
+        HStack(alignment: .center, spacing: 14) {
+            ZStack {
+                RoundedRectangle(cornerRadius: 18, style: .continuous)
+                    .fill(color(for: index).opacity(0.18))
+                    .frame(width: 62, height: 62)
+                rewardBadge(for: reward, index: index, size: 62)
+            }
+
+            VStack(alignment: .leading, spacing: 5) {
+                Text(reward.title)
+                    .font(.title3.weight(.heavy))
+                    .foregroundStyle(AppTheme.ink)
+                Text("Tap to edit")
+                    .font(.caption.weight(.heavy))
+                    .foregroundStyle(AppTheme.skyDark)
+                Text("\(reward.cost) coins")
+                    .font(.subheadline.weight(.bold))
+                    .foregroundStyle(color(for: index))
+            }
+
+            Spacer()
+        }
+        .contentShape(Rectangle())
+        .onTapGesture {
+            openEditor(for: reward, index: index)
         }
     }
 
@@ -228,9 +233,12 @@ struct RewardsHubView: View {
         }
     }
 
-    private var dashboardButton: some View {
-        Button("Dashboard") {
+    private var backButton: some View {
+        Button {
             appStore.goToHome()
+        } label: {
+            Text("Back")
+                .kitsuButtonTextShadow()
         }
         .font(.headline.weight(.bold))
         .buttonStyle(.borderedProminent)
@@ -262,6 +270,7 @@ struct RewardsHubView: View {
             Text(title)
                 .font(.system(.headline, design: .rounded, weight: .bold))
                 .foregroundStyle(AppTheme.ink)
+                .kitsuButtonTextShadow()
                 .padding(.horizontal, 22)
                 .padding(.vertical, 14)
                 .frame(maxWidth: isCompactLayout ? .infinity : nil)
@@ -312,14 +321,20 @@ struct RewardsHubView: View {
                         }
 
                         VStack(alignment: .leading, spacing: 10) {
-                            Button("Choose icon") {
+                            Button {
                                 showIconPicker = true
+                            } label: {
+                                Text("Choose icon")
+                                    .kitsuButtonTextShadow()
                             }
                             .font(.headline.weight(.bold))
                             .buttonStyle(.bordered)
 
-                            Button("Take photo") {
+                            Button {
                                 showRewardCamera = true
+                            } label: {
+                                Text("Take photo")
+                                    .kitsuButtonTextShadow()
                             }
                             .font(.headline.weight(.bold))
                             .buttonStyle(.borderedProminent)
@@ -348,10 +363,10 @@ struct RewardsHubView: View {
                 Spacer()
             }
             .padding(24)
-            .background(AppTheme.cream.ignoresSafeArea())
+            .background(screenBackground.ignoresSafeArea())
             .navigationTitle("")
             .navigationBarTitleDisplayMode(.inline)
-            .toolbarBackground(AppTheme.cream, for: .navigationBar)
+            .toolbarBackground(AppTheme.sunflower.opacity(0.95), for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
             .toolbarColorScheme(.light, for: .navigationBar)
             .toolbar {
@@ -361,14 +376,17 @@ struct RewardsHubView: View {
                         .foregroundStyle(AppTheme.skyDark)
                 }
                 ToolbarItem(placement: .topBarLeading) {
-                    Button("Cancel") {
+                    Button {
                         parentSecurityStore.clearVerification()
                         editorIndex = nil
+                    } label: {
+                        Text("Cancel")
+                            .kitsuButtonTextShadow()
                     }
                     .font(.headline.weight(.bold))
                 }
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("Save") {
+                    Button {
                         let trimmed = editorText.trimmingCharacters(in: .whitespacesAndNewlines)
                         guard !trimmed.isEmpty, rewardStore.rewards.indices.contains(index) else {
                             parentSecurityStore.clearVerification()
@@ -380,10 +398,24 @@ struct RewardsHubView: View {
                         rewardStore.rewards[index].imageData = editorImageData
                         parentSecurityStore.clearVerification()
                         editorIndex = nil
+                    } label: {
+                        Text("Save")
+                            .kitsuButtonTextShadow()
                     }
                     .font(.headline.weight(.bold))
                 }
             }
+        }
+    }
+
+    private func openEditor(for reward: RewardItem, index: Int) {
+        editorText = reward.title
+        editorSymbolName = reward.symbolName ?? icon(for: index)
+        editorImageData = reward.imageData
+        if parentSecurityStore.hasConfiguredPIN && !parentSecurityStore.isParentVerified {
+            pendingEditorIndex = index
+        } else {
+            editorIndex = index
         }
     }
 
@@ -463,13 +495,19 @@ struct RewardsHubView: View {
                 }
                 .padding(24)
             }
-            .background(AppTheme.cream.ignoresSafeArea())
+            .background(screenBackground.ignoresSafeArea())
             .navigationTitle("Choose icon")
             .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackground(AppTheme.sunflower.opacity(0.95), for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
+            .toolbarColorScheme(.light, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("Close") {
+                    Button {
                         showIconPicker = false
+                    } label: {
+                        Text("Close")
+                            .kitsuButtonTextShadow()
                     }
                     .font(.headline.weight(.bold))
                 }
@@ -480,6 +518,10 @@ struct RewardsHubView: View {
     private var displayName: String {
         let trimmed = childStore.profile.name.trimmingCharacters(in: .whitespacesAndNewlines)
         return trimmed.isEmpty ? "your child" : trimmed
+    }
+
+    private var screenBackground: AccentScreenBackground {
+        AccentScreenBackground(accent: AppTheme.sunflower)
     }
 
     private var isCompactLayout: Bool {

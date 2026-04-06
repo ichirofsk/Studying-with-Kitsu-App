@@ -40,8 +40,11 @@ struct ChildOnboardingView: View {
 
                     Spacer()
 
-                    Button("Cancel") {
+                    Button {
                         onCancel()
+                    } label: {
+                        Text("Cancel")
+                            .kitsuButtonTextShadow()
                     }
                     .buttonStyle(.borderedProminent)
                     .tint(AppTheme.coral)
